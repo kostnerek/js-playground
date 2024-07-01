@@ -6,7 +6,7 @@ import { UserService } from 'src/user/user.service';
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-  async validateUser(email: string): Promise<User> {
-    return this.userService.getOneByEmail(email);
+  async validateUser(id: string): Promise<User> {
+    return this.userService.getOneById(id);
   }
 }

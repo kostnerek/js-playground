@@ -5,14 +5,14 @@ import { PassportModule } from '@nestjs/passport';
 
 import { AuthConfig } from '../config/auth.config';
 import { ConfigModule } from '../config/config.module';
-import { Token, TokenSchema } from './token.schema';
 import { TokenService } from './token.service';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { MagicLoginStrategy } from './strategy/magiclink.strategy';
 import { MagicService } from './magic.service';
+import { Token, TokenSchema } from './schemas/token.schema';
+import { JwtStrategy } from './strategy/jwt.strategy';
 @Module({
   imports: [
     ConfigModule,
@@ -37,8 +37,8 @@ import { MagicService } from './magic.service';
     NotificationsModule,
     TokenService,
     AuthService,
-    MagicLoginStrategy,
     MagicService,
+    JwtStrategy,
   ],
 })
 export class AuthModule {}

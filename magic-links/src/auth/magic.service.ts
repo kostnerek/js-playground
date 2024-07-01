@@ -7,7 +7,7 @@ import { verify, decode } from 'jsonwebtoken';
 import { AuthConfig } from 'src/config/auth.config';
 import { ITokenPayload } from './interfaces/token.interface';
 import { match } from 'ts-pattern';
-import { TokenType } from './tokens.types';
+import { TokenType } from './types/tokens.types';
 import { UserStatus } from 'src/user/enums/user-status.enum';
 
 @Injectable()

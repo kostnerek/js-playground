@@ -6,7 +6,7 @@ import { AuthService } from '../auth.service';
 import { AuthConfig } from 'src/config/auth.config';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private authService: AuthService,
     private readonly config: AuthConfig,
@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
   }
 
   async validate(payload: any) {
-    const user = this.authService.validateUser(payload.email);
+    const user = this.authService.validateUser(payload.userId);
     return user;
   }
 }

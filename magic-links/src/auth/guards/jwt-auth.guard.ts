@@ -11,7 +11,7 @@ import { UserType } from '../../user/enums/user-type.enum';
 import { IS_PUBLIC_KEY } from 'src/common/decorators/public.decorator';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt-auth') {
+export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();
   }
@@ -53,6 +53,7 @@ export class JwtAuthGuard extends AuthGuard('jwt-auth') {
 
       return true;
     } catch (err) {
+      console.error(err);
       throw new UnauthorizedException('Unauthorized');
     }
   }

@@ -3,11 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthConfig } from 'src/config/auth.config';
-import { Token, TokenDocument } from './token.schema';
-import { TokenType } from './tokens.types';
+import { TokenType } from './types/tokens.types';
 import { UserType } from 'src/user/enums/user-type.enum';
 import { add } from 'date-fns';
 import { MagicLinkType } from './enums/magic-link.enum';
+import { Token, TokenDocument } from './schemas/token.schema';
 
 @Injectable()
 export class TokenService {
