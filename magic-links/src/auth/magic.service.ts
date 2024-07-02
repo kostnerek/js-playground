@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { MailNotificationService } from 'src/notifications/mail-notifications.service';
 import { UserService } from 'src/user/user.service';
 import { MagicLinkType } from './enums/magic-link.enum';
@@ -44,13 +44,13 @@ export class MagicService {
   validate(token: string): ITokenPayload {
     verify(token, this.config.getMagicLinkSecret(), (err, decoded) => {
       if (err) {
-        throw new Error('Invalid or malformed token');
+        throw new UnauthorizedException('Expired or malformed token');
       }
       return decoded;
     });
     const decoded = decode(token) as ITokenPayload;
     if (decoded.tokenType !== TokenType.MagicLink) {
-      throw new Error('Invalid token type');
+      throw new UnauthorizedException('Invalid token type');
     }
     return decoded;
   }
