@@ -1,5 +1,5 @@
 {
-  "name": "ms1",
+  "name": "orchestrator",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -17,7 +17,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "release": "./node_modules/.bin/commit-and-tag-version --no-verify",
+    "release:first": "yarn release --first-release",
+    "release:major": "yarn release --release-as major",
+    "release:minor": "yarn release --release-as minor",
+    "release:patch": "yarn release --release-as patch"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
