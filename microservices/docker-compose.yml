@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  ms1:
+    build:
+      context: ./code/ms1
+      dockerfile: Dockerfile
+    volumes:
+      - ./code/ms1:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - ms-network
+
+  ms2:
+    build:
+      context: ./code/ms2
+      dockerfile: Dockerfile
+    volumes:
+      - ./code/ms2:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - ms-network
+
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq_container
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_CONFIG_FILE: "/etc/rabbitmq/rabbitmq.conf"
+    networks:
+      - ms-network
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile.nginx
+    ports:
+      - "80:80"
+    networks:
+      - ms-network
+networks:
+  ms-network:
+    driver: bridge
