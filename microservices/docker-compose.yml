@@ -46,7 +46,6 @@ services:
     environment:
       - NODE_ENV=development
     
-
   redis:
     image: redis:latest
     container_name: redis

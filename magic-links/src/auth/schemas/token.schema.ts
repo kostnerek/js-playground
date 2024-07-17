@@ -9,7 +9,7 @@ export class Token {
   @Prop({
     type: SchemaTypes.ObjectId,
     ref: 'User',
-    required: true,
+    required: false,
   })
   user: string;
 
@@ -24,6 +24,16 @@ export class Token {
     enum: TokenType,
   })
   tokenType: TokenType;
+
+  @Prop({
+    type: Date
+  })
+  usedAt: Date;
+
+  @Prop({
+    type:String
+  })
+  hash: string;
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);

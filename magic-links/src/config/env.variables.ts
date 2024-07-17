@@ -8,13 +8,6 @@ export enum Environment {
   Test = 'test',
 }
 
-export enum SentryEnvironment {
-  Local = 'local',
-  Production = 'production',
-  Staging = 'staging',
-  ClientStaging = 'client-staging',
-}
-
 export class EnvironmentVariables {
   @IsInt()
   @Transform(({ value }) => +value)

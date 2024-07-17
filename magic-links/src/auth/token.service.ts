@@ -7,6 +7,7 @@ import { TokenType } from './types/tokens.types';
 import { UserType } from 'src/user/enums/user-type.enum';
 import { add } from 'date-fns';
 import { MagicLinkType } from './enums/magic-link.enum';
+import { hash as bcryptHash, compare } from 'bcrypt';
 import { Token, TokenDocument } from './schemas/token.schema';
 
 @Injectable()
@@ -62,8 +63,8 @@ export class TokenService {
     email: string,
     type: MagicLinkType,
     redirection: string,
-  ): Promise<string> {
-    return this.jwtService.sign(
+  ): Promise<{tokenDocument: TokenDocument, token: string}> {
+    const token = this.jwtService.sign(
       {
         email,
         magicType: type,
@@ -72,6 +73,19 @@ export class TokenService {
       },
       { expiresIn: '1h', secret: this.config.getMagicLinkSecret() },
     );
+
+    var dn = new Date();
+    dn.setHours(dn.getHours() + 1);
+    const tokenModel = await this.tokenModel.create({
+      hash: await bcryptHash(token, this.config.getSaltRounds()),
+      tokenType: TokenType.MagicLink,
+      revokeDate: dn
+    })
+    return {tokenDocument: tokenModel, token};
+  }
+
+  async invalidateToken(id: string) {
+    return this.tokenModel.findByIdAndUpdate(id, {usedAt: new Date()}, {new:true})
   }
 
   async findById(requestId: string): Promise<TokenDocument> {

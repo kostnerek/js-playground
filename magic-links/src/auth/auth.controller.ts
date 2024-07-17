@@ -28,6 +28,18 @@ export class AuthController {
   }
 
   @Public()
+  @Post('test')
+  async test(@Body() body: {email: string}) {
+    return this.magicService.test(body.email)
+  }
+
+  @Public()
+  @Get('test-magic')
+  async testMagic(@Query() body: {token: string, id: string}) {
+    return this.magicService.testCallback(body.token, body.id)
+  }
+
+  @Public()
   @Get('magic')
   async magicCallback(@Query('token') token: string) {
     return await this.magicService.callback(token);
