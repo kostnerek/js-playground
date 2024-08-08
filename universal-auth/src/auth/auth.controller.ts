@@ -11,6 +11,7 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { User } from "src/user/schemas/user.schema";
 import { InjectUser } from "src/decorators/user.decorator";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { VerifyAccountDto } from "./dto/verify-account.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -41,8 +42,15 @@ export class AuthController {
     @Post('change-password')
     @Public()
     async changePassword(@Body() body: ChangePasswordDto) {
-        await this.authService.changePassword(body.id, body.token, body.password);
+        await this.authService.changePassword(body);
         return {message: 'Password has been changed'};
+    }
+
+    @Get('verify-account')
+    @Public()
+    async verifyAccount(@Body() body: VerifyAccountDto) {
+        await this.authService.verifyAccount(body);
+        return {message: 'Account has been verified'};
     }
 
 

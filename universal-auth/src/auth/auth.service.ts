@@ -12,9 +12,11 @@ import { UserStatus } from 'src/user/enums/user-status.enum';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthConfig } from 'src/config/auth.config';
-import { MailNotificationService } from 'src/notifications/mail-notifications.service';
 import { ServerConfig } from 'src/config/server.config';
 import { TokenType } from './types/tokens.types';
+import { AuthEventsEmitter } from './events/events.emitter';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { VerifyAccountDto } from './dto/verify-account.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +25,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly config: AuthConfig,
     private readonly serverConfig: ServerConfig,
-    private readonly mailService: MailNotificationService,
+    private readonly eventEmitter: AuthEventsEmitter
   ) {}
 
   async validateUser(id: string): Promise<User> {
@@ -41,6 +43,9 @@ export class AuthService {
       lastName: input.lastName,
       hash: await bcryptHash(input.password, this.config.getSaltRounds()),
     };
+    const {id, token} = await this.tokenService.generateVerifyAccountToken(user._id.toString());
+    const verifyLink = `${this.serverConfig.getFrontendUrl()}/auth/verify-account?id=${id}&token=${token}`;
+    this.eventEmitter.emitUserVerifyAccount({email: userParsed.email, url: verifyLink});
     return this.userService.create(userParsed);
   }
 
@@ -59,6 +64,29 @@ export class AuthService {
     return this.tokenService.generateTokens(user._id.toString(), user.type);
   }
 
+  async verifyAccount(body: VerifyAccountDto) {
+    const tokenFromDb = await this.tokenService.findById(body.id);
+    if (!tokenFromDb) {
+      throw new NotFoundException('Token not found');
+    }
+    if(!await compare(body.token, tokenFromDb.hash)) {
+      throw new UnauthorizedException('Malformed token');
+    }
+    if(tokenFromDb.usedAt) {
+      throw new UnauthorizedException('Token has been used');
+    }
+    const decodedToken = await this.tokenService.decodeToken(body.token);
+    if (decodedToken.tokenType !== TokenType.ResetPassword) {
+      throw new UnauthorizedException('Invalid token //type');
+    }
+    const user = await this.userService.getOneById(decodedToken.userId);
+    if(user.status !== UserStatus.CREATED) {
+      throw new UnauthorizedException('User is not pending');
+    }
+    await this.tokenService.invalidateToken(body.id);
+    await this.userService.upsert({id: decodedToken.userId, status: UserStatus.ACTIVE});
+  }
+
 
   async resetPassword(email: string) {
     const user = await this.userService.findOneByEmail(email);
@@ -67,22 +95,21 @@ export class AuthService {
     }
     const {id, token} = await this.tokenService.generatePasswordResetToken(user._id.toString());
     const resetLink = `${this.serverConfig.getFrontendUrl()}/auth/reset-password?id=${id}&token=${token}`;
-    console.log(id, token);
-    await this.mailService.sendMail(user.email, 'Reset password', `Reset password link will be active for 10 minutes ${resetLink}`);
+    this.eventEmitter.emitUserResetPassword({email: user.email, url: resetLink});
   }
 
-  async changePassword(id: string, token: string, password: string) {
-    const tokenFromDb = await this.tokenService.findById(id);
+  async changePassword(body: ChangePasswordDto) {
+    const tokenFromDb = await this.tokenService.findById(body.id);
     if (!tokenFromDb) {
       throw new NotFoundException('Token not found');
     }
-    if(!await compare(token, tokenFromDb.hash)) {
+    if(!await compare(body.token, tokenFromDb.hash)) {
       throw new UnauthorizedException('Malformed token');
     }
     if(tokenFromDb.usedAt) {
       throw new UnauthorizedException('Token has been used');
     }
-    const decodedToken = await this.tokenService.decodeToken(token);
+    const decodedToken = await this.tokenService.decodeToken(body.token);
     if (decodedToken.tokenType !== TokenType.ResetPassword) {
       throw new UnauthorizedException('Invalid token //type');
     }
@@ -90,8 +117,8 @@ export class AuthService {
     if(!user.authType.includes(UserAuthType.Local)) {
       user.authType.push(UserAuthType.Local);
     }
-    await this.userService.upsert({id: decodedToken.userId, hash: await bcryptHash(password, this.config.getSaltRounds()), authType: user.authType});
-    await this.tokenService.invalidateToken(id);
+    await this.userService.upsert({id: decodedToken.userId, hash: await bcryptHash(body.password, this.config.getSaltRounds()), authType: user.authType});
+    await this.tokenService.invalidateToken(body.id);
   }
 
   serializeExternalAuthData(userData: IGoogleUserData | IFacebookUserData): IExternalAuthUserData {

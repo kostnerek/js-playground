@@ -13,6 +13,7 @@ import { AuthConfig } from 'src/config/auth.config';
 import { FacebookStrategy } from './strategy/facebook.strategy';
 import { UserInjectModule } from 'src/user-inject/user-inject.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
+import { AuthEventsEmitter } from './events/events.emitter';
 
 @Module({
     imports: [
@@ -33,7 +34,7 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
           }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, GoogleStrategy, JwtStrategy, TokenService, FacebookStrategy],
+    providers: [AuthService, GoogleStrategy, JwtStrategy, TokenService, FacebookStrategy, AuthEventsEmitter],
     exports: [AuthService],
 })
 export class AuthModule {}

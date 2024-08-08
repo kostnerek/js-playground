@@ -6,10 +6,10 @@ import { ConfigModule } from './config/config.module';
 import { DatabaseConfig } from './config/database.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ServerConfig } from './config/server.config';
 import { ThrottlerConfig } from './config/throttler.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -22,6 +22,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       imports: [ConfigModule],
       useExisting: ThrottlerConfig,
     }),
+    EventEmitterModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService, 

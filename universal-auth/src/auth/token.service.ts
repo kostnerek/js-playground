@@ -79,6 +79,26 @@ export class TokenService {
     return { token, id: createdToken._id.toString() };
   }
 
+  async generateVerifyAccountToken(userId: string): Promise<{token: string, id: string}> {
+    const token = this.jwtService.sign(
+      {
+        userId,
+        tokenType: TokenType.AccountConfirmation,
+      },
+      { expiresIn: '10m' },
+    );
+    const createdToken = await this.tokenModel.create({
+      user: userId,
+      revokeDate: add(new Date(), {
+        minutes: 10,
+      }),
+      hash: await bcryptHash(token, this.config.getSaltRounds()),
+      tokenType: TokenType.AccountConfirmation,
+    });
+    
+    return { token, id: createdToken._id.toString() };
+  }
+
   async decodeToken(token: string) {
     return this.jwtService.decode(token);
   }
