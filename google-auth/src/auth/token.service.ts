@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { AuthConfig } from 'src/config/auth.config';
 import { TokenType } from './types/tokens.types';
-import { UserType } from 'src/user/enums/user-type.enum';
 import { add } from 'date-fns';
 import { Token, TokenDocument } from './schemas/token.schema';
-import {AuthConfig} from '../config/auth.config';
 
 @Injectable()
 export class TokenService {
@@ -18,24 +17,22 @@ export class TokenService {
 
   async generateTokens(
     userId: string,
-    userType: UserType,
   ): Promise<{
     sessionToken: string;
     refreshToken: string;
   }> {
-    const sessionToken = this.generateSessionToken(userId, userType);
+    const sessionToken = this.generateSessionToken(userId);
     const refreshToken = await this.generateRefreshToken(userId);
     return { sessionToken, refreshToken };
   }
 
-  generateSessionToken(userId: string, userType: UserType): string {
+  generateSessionToken(userId: string): string {
     return this.jwtService.sign(
       {
         userId,
         tokenType: TokenType.Session,
-        userType,
       },
-      { expiresIn: '1h' },
+      { expiresIn: `${this.config.getTokenExpirationTime()}m` },
     );
   }
 
