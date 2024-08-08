@@ -1,4 +1,4 @@
-export interface IFacebookUserData {
+export interface IExternalAuthUserData {
     email: string;
     firstName: string;
     lastName: string;
