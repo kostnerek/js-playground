@@ -38,6 +38,7 @@
     "mailgun.js": "^10.2.3",
     "mongoose": "^8.5.2",
     "passport": "^0.7.0",
+    "passport-azure-ad-oauth2": "^0.0.4",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",

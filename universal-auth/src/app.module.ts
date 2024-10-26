@@ -22,12 +22,13 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       imports: [ConfigModule],
       useExisting: ThrottlerConfig,
     }),
-    EventEmitterModule.forRoot()
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, 
+  providers: [
+    AppService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_GUARD, useClass: ThrottlerGuard }
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

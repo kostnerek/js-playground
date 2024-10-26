@@ -14,27 +14,36 @@ import { FacebookStrategy } from './strategy/facebook.strategy';
 import { UserInjectModule } from 'src/user-inject/user-inject.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 import { AuthEventsEmitter } from './events/events.emitter';
+import { ADStrategy } from './strategy/ad.strategy';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
-        ConfigModule,
-        UserModule,
-        UserInjectModule,
-        NotificationsModule,
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: async (config: AuthConfig) => ({
-              secret: config.getJwtSecret(),
-              signOptions: {
-                expiresIn: `${config.getTokenExpirationTime()}h`,
-              },
-            }),
-            inject: [AuthConfig],
-          }),
-    ],
-    controllers: [AuthController],
-    providers: [AuthService, GoogleStrategy, JwtStrategy, TokenService, FacebookStrategy, AuthEventsEmitter],
-    exports: [AuthService],
+  imports: [
+    MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
+    ConfigModule,
+    UserModule,
+    UserInjectModule,
+    NotificationsModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: AuthConfig) => ({
+        secret: config.getJwtSecret(),
+        signOptions: {
+          expiresIn: `${config.getTokenExpirationTime()}h`,
+        },
+      }),
+      inject: [AuthConfig],
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    GoogleStrategy,
+    ADStrategy,
+    JwtStrategy,
+    TokenService,
+    FacebookStrategy,
+    AuthEventsEmitter,
+  ],
+  exports: [AuthService],
 })
 export class AuthModule {}

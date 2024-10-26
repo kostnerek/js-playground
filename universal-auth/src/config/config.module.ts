@@ -9,6 +9,7 @@ import { FacebookConfig } from './facebook.config';
 import { GoogleConfig } from './google.config';
 import { MailConfig } from './mail.config';
 import { ThrottlerConfig } from './throttler.config';
+import { ADConfig } from './ad.config';
 
 @Module({
   imports: [
@@ -16,7 +17,25 @@ import { ThrottlerConfig } from './throttler.config';
       validate,
     }),
   ],
-  providers: [ServerConfig, DatabaseConfig, AuthConfig, FacebookConfig, GoogleConfig, MailConfig, ThrottlerConfig],
-  exports: [ServerConfig, DatabaseConfig, AuthConfig, FacebookConfig, GoogleConfig, MailConfig, ThrottlerConfig],
+  providers: [
+    ServerConfig,
+    DatabaseConfig,
+    AuthConfig,
+    FacebookConfig,
+    GoogleConfig,
+    ADConfig,
+    MailConfig,
+    ThrottlerConfig,
+  ],
+  exports: [
+    ServerConfig,
+    DatabaseConfig,
+    AuthConfig,
+    FacebookConfig,
+    GoogleConfig,
+    ADConfig,
+    MailConfig,
+    ThrottlerConfig,
+  ],
 })
 export class ConfigModule {}

@@ -83,6 +83,22 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   FACEBOOK_REDIRECT_URI: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AD_APP_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AD_TENANT_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AD_CLIENT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AD_REDIRECT_URI: string;
 }
 
 export function validate(config: Record<string, unknown>) {

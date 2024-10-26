@@ -1,12 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { PassportStrategy } from "@nestjs/passport";
-import { Profile, Strategy } from "passport-facebook";
-import { EnvironmentVariables } from "src/config/env.variables";
-import { FacebookConfig } from "src/config/facebook.config";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { Profile, Strategy } from 'passport-facebook';
+import { EnvironmentVariables } from 'src/config/env.variables';
+import { FacebookConfig } from 'src/config/facebook.config';
 
 @Injectable()
-export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
+export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor() {
     const config = new ConfigService<EnvironmentVariables>();
     const facebookConfig = new FacebookConfig(config);
@@ -14,8 +14,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
       clientID: facebookConfig.getAppId(),
       clientSecret: facebookConfig.getAppSecret(),
       callbackURL: facebookConfig.getRedirectUri(),
-      scope: "email",
-      profileFields: ["emails", "name", "picture.type(large)"],
+      scope: 'email',
+      profileFields: ['emails', 'name', 'picture.type(large)'],
     });
   }
 
@@ -23,7 +23,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: (err: any, user: any, info?: any) => void
+    done: (err: any, user: any, info?: any) => void,
   ): Promise<any> {
     const { name, emails } = profile;
     const user = {
